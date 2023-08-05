@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Notifications\OutageFinishedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
 
@@ -25,7 +26,7 @@ class OutageController extends Controller
             $lastOutage = $user->lastNonFinishedOutage();
 
             if (!$lastOutage) {
-                $user->outages()->create([
+                $lastOutage = $user->outages()->create([
                     "start" => $lastPing,
                     "end" => now(),
                 ]);
@@ -33,6 +34,8 @@ class OutageController extends Controller
                 $lastOutage->end = now();
                 $lastOutage->save();
             }
+
+            $user->notify(new OutageFinishedNotification($lastOutage));
         }
 
         $user->ping();
@@ -50,7 +53,8 @@ class OutageController extends Controller
             "outages" => $user->outages->map(fn($outage) => [
                 "start" => $outage->start->format("Y-m-d H:i:s"),
                 "end" => $outage->end?->format("Y-m-d H:i:s"),
-                "duration" => $outage->duration(),
+                "duration" => $outage->duration()->format("%H:%I:%S"),
+                "duration_for_humans" => $outage->duration()->forHumans(),
                 "done" => $outage->end !== null,
             ])->toArray()
         ];

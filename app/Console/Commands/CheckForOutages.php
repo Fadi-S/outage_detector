@@ -36,17 +36,17 @@ class CheckForOutages extends Command
                 return;
             }
 
-            if($lastPing->diffInMinutes(now()) > 2) {
+            if($lastPing->diffInSeconds(now()) > 120) {
                 $lastOutage = $user->lastNonFinishedOutage();
 
                 if(! $lastOutage) {
-                    $outage = $user->outages()->create([
+                    $lastOutage = $user->outages()->create([
                         "start" => $lastPing,
                         "end" => null,
                     ]);
-                }
 
-                $user->notify(new OutageDetectedNotification($outage));
+                    $user->notify(new OutageDetectedNotification($lastOutage));
+                }
             }
         });
     }
