@@ -3,10 +3,12 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Redis;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -46,5 +48,25 @@ class User extends Authenticatable
     public function outages() : HasMany
     {
         return $this->hasMany(Outage::class);
+    }
+
+    public function lastNonFinishedOutage() : ?Outage
+    {
+        return $this->outages()->whereNull("end")->latest("start")->first();
+    }
+
+    public function ping() : void
+    {
+        Redis::set("last-ping:{$this->id}", now()->format("Y-m-d H:i:s"));
+    }
+
+    public function lastPing() : ?Carbon
+    {
+        $ping = Redis::get("last-ping:{$this->id}");
+        if($ping === null) {
+            return null;
+        }
+
+        return Carbon::createFromFormat("Y-m-d H:i:s", $ping);
     }
 }
