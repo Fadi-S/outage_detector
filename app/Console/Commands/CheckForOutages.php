@@ -36,7 +36,7 @@ class CheckForOutages extends Command
                 return;
             }
 
-            if($lastPing->diffInSeconds(now()) > 120) {
+            if($lastPing->diffInSeconds(now()) > config("app.cutoff_in_seconds")) {
                 $lastOutage = $user->lastNonFinishedOutage();
 
                 if(! $lastOutage) {
