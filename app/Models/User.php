@@ -55,6 +55,11 @@ class User extends Authenticatable
         return $this->outages()->whereNull("end")->latest("start")->first();
     }
 
+    public function emails() : HasMany
+    {
+        return $this->hasMany(Email::class);
+    }
+
     public function ping() : void
     {
         Redis::set("last-ping:{$this->id}", now()->format("Y-m-d H:i:s"));

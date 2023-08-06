@@ -5,7 +5,6 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Notifications\OutageFinishedNotification;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redis;
 
 class OutageController extends Controller
 {
@@ -36,6 +35,7 @@ class OutageController extends Controller
             }
 
             $user->notify(new OutageFinishedNotification($lastOutage));
+            $user->emails->each(fn($email) => $email->notify(new OutageFinishedNotification($lastOutage)));
         }
 
         $user->ping();

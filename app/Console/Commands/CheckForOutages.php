@@ -46,6 +46,7 @@ class CheckForOutages extends Command
                     ]);
 
                     $user->notify(new OutageDetectedNotification($lastOutage));
+                    $user->emails->each(fn($email) => $email->notify(new OutageDetectedNotification($lastOutage)));
                 }
             }
         });
