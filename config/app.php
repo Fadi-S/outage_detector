@@ -59,7 +59,7 @@ return [
 
     'asset_url' => env('ASSET_URL'),
 
-    'cutoff_in_seconds' => 240,
+    'cutoff_in_seconds' => 260,
 
     /*
     |--------------------------------------------------------------------------
