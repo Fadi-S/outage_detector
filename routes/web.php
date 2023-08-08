@@ -1,18 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Livewire\Livewire;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
+Livewire::setUpdateRoute(fn($handle) => Route::post('/endpoint', $handle));
+Livewire::setScriptRoute(fn($handle) => Route::get('/control.js', $handle));
 
-Route::get('/', function () {
-    return view('welcome');
-});
